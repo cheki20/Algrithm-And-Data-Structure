@@ -1,12 +1,14 @@
 public class BinarySearch{    
+
  	public static void main(String args[]){  
-        int arr[] = {10,20,30,40,50};  
+        int arr[] = {10,40,12,30,50};  
         int value = 30;  
         int first=0;
+
+        
         int last=arr.length-1;  
-         
         int mid = (first + last)/2;  
-   		while( first <= last ){  
+   		 while( first <= last ){  
       		if ( arr[mid] < value){  
         		first = mid + 1;     
       		}

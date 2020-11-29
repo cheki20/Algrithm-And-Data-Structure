@@ -2,7 +2,9 @@ import java.util.*;
 
 public class Solution<Key extends Comparable<Key>, Value> {
     private Node root;  // root of BST
-    int nodeCount;
+    private int n;
+     int nodeCount;
+
 
     private class Node {
         private Key key;           // sorted by key
@@ -25,6 +27,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
      */
     public Solution() {
         root = null;
+        n = 0;
     }
 
     /**
@@ -32,7 +35,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
      * @return {@code true} if this symbol table is empty; {@code false} otherwise
      */
     public boolean isEmpty() {
-        if (root == null) {
+        if (n == null) {
             return true;    
         }
         return false;  
@@ -43,7 +46,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
      * @return the number of key-value pairs in this symbol table
      */
     public int size() {
-        return root.size;   
+        return n;   
     }
     /**
      * Does this symbol table contain the given key?
@@ -86,27 +89,6 @@ public class Solution<Key extends Comparable<Key>, Value> {
         return x.val;   
     }
 
-    public Node getNode(Node x, Key key){
-        Node node = null;
-        if (key == null) {
-            throw new IllegalArgumentException("Key is Null");   
-        }
-        while( x!= null) {
-            int cmp = key.compareTo(x.key);
-            if (cmp == 0) {
-                return x;
-            }
-            if (cmp > 0) {
-                node = x;
-                x = x.right;
-            }
-            else {
-                x = x.left;
-            }
-        }
-        return node;
-    }
-
     /**
      * Inserts the specified key-value pair into the symbol table, overwriting the old 
      * value with the new value if the symbol table already contains the specified key.
@@ -136,7 +118,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
                         x = x.left;
                         if(x == null){
                             parent.left = newest;
-                            root.size++;
+                            n = root.size++;
                             return;
                         }
                         else if(x.key == key){
@@ -148,7 +130,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
                         x = x.right;
                         if(x == null){
                             parent.right = newest;
-                            root.size++;
+                            n = root.size++;
                             return;
                         }
                         else if(x.key == key){
@@ -175,16 +157,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
                 throw new NoSuchElementException("Symbol Table is Empty");     
         }
         return x.key;
-    } 
-
-    public Key max() {
-        Node x = root;
-        for (x = root; x.right != null; x = x.right) {
-            if (x == null) 
-                throw new NoSuchElementException("Symbol Table is Empty");     
-        }
-        return x.key;
-    } 
+    }  
     /**
      * Returns the largest key in the symbol table less than or equal to {@code key}.
      *
@@ -213,6 +186,26 @@ public class Solution<Key extends Comparable<Key>, Value> {
             }
         }
         return temp.key;
+    }
+    private Node getNode(Node x, Key key){
+        Node node = null;
+        if (key == null) {
+            throw new IllegalArgumentException("Key is Null");   
+        }
+        while( x!= null) {
+            int cmp = key.compareTo(x.key);
+            if (cmp == 0) {
+                return x;
+            }
+            if (cmp > 0) {
+                node = x;
+                x = x.right;
+            }
+            else {
+                x = x.left;
+            }
+        }
+        return node;
     }
 
     /**
@@ -267,52 +260,68 @@ public class Solution<Key extends Comparable<Key>, Value> {
      * @throws IllegalArgumentException if either {@code lo} or {@code hi}
      *         is {@code null}
      */
-    public Iterable<Key> keys(Key lo, Key hi) {
-        if (lo == null) {
-            throw new IllegalArgumentException("first argument to keys() is null");
-        }
-        if (hi == null) {
-            throw new IllegalArgumentException("second argument to keys() is null");
-        }
 
-        Stack<Key> stack = new Stack<Key>();
-        keys(root, stack, lo, hi);
-        return stack;
-    }
+    // public Iterable keys(Key lo, Key hi) {
+    //     Queue<Key> queue = new LinkedList<Key>();
+    //     keys(lo, hi);
+    //     return queue;
+    // } 
 
-    private void keys(Node x,Stack<Key> stack, Key lo, Key hi) { 
-        if (x == null) {
-            return;
-        }
-        while (x != null){
-            int cmplo = x.key.compareTo(lo);
-            int cmphi = x.key.compareTo(hi);
-            
-            if (x.left == null) {
-                if (cmphi <= 0 && cmplo >= 0) {
-                    stack.push(x.key);
-                }
-                x = x.right;
-            }
-            else {
-                Node node = x.left;
-                while (node.right != null && node.right != x) {
-                    node = node.right;
-                }
-                if (node.right == null) {
-                    node.right = x;
-                    x = x.left;
-                }
-                else {
-                    node.right = null;
-                    if (cmphi <= 0 && cmplo>=0) stack.push(x.key);{
-                     x = x.right;
-                    }
-                }
-            }
-        }
-    }
-        
+    // private void keys(Key lo, Key hi) { 
+    //     Node x = root;
+    //     Node parent;
+    //     if (x == null) { 
+    //         return; 
+    //     }
+    //     while(x != null) {
+    //         parent = x;
+    //         int cmplo = lo.compareTo(x.key); 
+    //         int cmphi = hi.compareTo(x.key); 
+    //         if (cmplo < 0) {
+    //             x = parent.left;
+    //             //keys(x.left, queue, lo, hi); 
+    //         }
+    //         if (cmplo <= 0 && cmphi >= 0) {
+    //             System.out.println(parent.key + "");
+    //             //queue.add(x.key); 
+    //         }
+    //         if (cmphi > 0) {
+    //             x = parent.right;
+    //             //keys(x.right, queue, lo, hi); 
+    //         }
+    //     }
+    // } 
+    // public Iterable<Key> keys(Key lo, Key hi) {
+    //     if (lo == null) {
+    //         throw new IllegalArgumentException("first argument to keys() is null");
+    //     }
+    //     if (hi == null) {
+    //         throw new IllegalArgumentException("second argument to keys() is null");
+    //     }
+    //     Queue<Key> queue = new LinkedList<> ();
+    //     Node x = root;
+    //     Node parent;
+    //     while (x != null){
+    //         parent = x;
+    //         int cmplo = lo.compareTo(x.key); 
+    //         int cmphi = hi.compareTo(x.key); 
+
+    //         if (cmplo < 0) {
+    //             x = x.left;
+    //             //keys(x.left, queue, lo, hi); 
+    //         }
+    //         if (cmplo <= 0 && cmphi >= 0) {
+    //             queue.add(x.key); 
+    //         }
+    //         if (cmphi > 0) {
+    //             x = x.right;
+    //             //keys(x.right, queue, lo, hi);
+    //         }
+    //     }
+    //     return queue;
+
+    // }
+
     /* Run the program by giving the approriate command obtained from
     input files through input.txt files. The output should be displayed
     exactly like the file output.txt shows it to be.*/

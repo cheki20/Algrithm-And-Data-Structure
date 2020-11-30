@@ -2,7 +2,6 @@ import java.util.*;
 
 public class Solution<Key extends Comparable<Key>, Value> {
     private Node root;  // root of BST
-    int nodeCount;
 
     private class Node {
         private Key key;           // sorted by key
@@ -32,7 +31,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
      * @return {@code true} if this symbol table is empty; {@code false} otherwise
      */
     public boolean isEmpty() {
-        if (root == null) {
+        if (size() == 0) {
             return true;    
         }
         return false;  
@@ -53,9 +52,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
      *         {@code false} otherwise
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
-    // public boolean contains(Key key) {
-       
-    // }
+
 
     /**
      * Returns the value associated with the given key.
@@ -66,16 +63,21 @@ public class Solution<Key extends Comparable<Key>, Value> {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public Value get(Key key) {
-        Node x = root;
         if (key == null) {
             throw new IllegalArgumentException("Key is Null");   
         }
+        return get(root, key);  
+    }
+    private Value get(Node x, Key key) {
+        if (x == null) {
+            return null;
+        } 
         while( x.key != key){
-            int temp = key.compareTo(x.key);
-            if (temp < 0) {
+            int cmp = key.compareTo(x.key);
+            if (cmp < 0) {
                 x = x.left;
             }
-            else if (temp > 0) {
+            else if (cmp > 0) {
                 x = x.right;   
             }
             if (x.key == key) {
@@ -83,28 +85,8 @@ public class Solution<Key extends Comparable<Key>, Value> {
                 
             }
         }
-        return x.val;   
-    }
+        return x.val;  
 
-    public Node getNode(Node x, Key key){
-        Node node = null;
-        if (key == null) {
-            throw new IllegalArgumentException("Key is Null");   
-        }
-        while( x!= null) {
-            int cmp = key.compareTo(x.key);
-            if (cmp == 0) {
-                return x;
-            }
-            if (cmp > 0) {
-                node = x;
-                x = x.right;
-            }
-            else {
-                x = x.left;
-            }
-        }
-        return node;
     }
 
     /**
@@ -157,10 +139,12 @@ public class Solution<Key extends Comparable<Key>, Value> {
                         }
                     }
                 }
+
             }
         }
 
     }
+
 
     /**
      * Returns the smallest key in the symbol table.
@@ -175,16 +159,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
                 throw new NoSuchElementException("Symbol Table is Empty");     
         }
         return x.key;
-    } 
-
-    public Key max() {
-        Node x = root;
-        for (x = root; x.right != null; x = x.right) {
-            if (x == null) 
-                throw new NoSuchElementException("Symbol Table is Empty");     
-        }
-        return x.key;
-    } 
+    }  
     /**
      * Returns the largest key in the symbol table less than or equal to {@code key}.
      *
@@ -194,14 +169,14 @@ public class Solution<Key extends Comparable<Key>, Value> {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public Key floor(Key key) {
-        Node x = getNode(root, key);
-        Node temp = x;
         if (key == null) {
             throw new IllegalArgumentException("Key is Null"); 
         }   
         else if (size() == 0) {
             throw new NoSuchElementException("No such Key");
         }
+        Node x = floor(root, key);
+        Node temp = x;
         if (x==null) {
             return null;
         } 
@@ -215,6 +190,23 @@ public class Solution<Key extends Comparable<Key>, Value> {
         return temp.key;
     }
 
+    private Node floor(Node x, Key key){
+        Node node = null;
+        while( x!= null) {
+            int cmp = key.compareTo(x.key);
+            if (cmp == 0) {
+                return x;
+            }
+            if (cmp > 0) {
+                node = x;
+                x = x.right;
+            }
+            else {
+                x = x.left;
+            }
+        }
+        return node;
+    }
     /**
      * Return the key in the symbol table whose rank is {@code k}.
      * This is the (k+1)st smallest key in the symbol table.
@@ -225,7 +217,6 @@ public class Solution<Key extends Comparable<Key>, Value> {
      *        <em>n</em>–1
      */
     public Key select(int k) {
-        nodeCount=0;
         if ((k<0) || k>=size()) {
             throw new IllegalArgumentException("Rank should be between 0 ans its size");
         }
@@ -234,20 +225,21 @@ public class Solution<Key extends Comparable<Key>, Value> {
     
     // Return key of rank k. 
      private Node select(Node x, int k) {
-        Stack<Node> stack = new Stack<Node>();
+        int count=0;
+        Queue<Node> queue = new LinkedList<Node>();
         Node curr = root;
-        while (!stack.empty() || curr != null)
+        while (!queue.isEmpty() || curr != null)
         {
             if (curr != null)
             {
-                stack.push(curr);
+                queue.add(curr);
                 curr = curr.left;
             }
             else
             {
-                curr = stack.pop();
-                nodeCount++;
-                if(nodeCount == k)
+                curr = queue.remove();
+                count++;
+                if(count == k)
                     break;
                 curr = curr.right;
             }
@@ -267,6 +259,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
      * @throws IllegalArgumentException if either {@code lo} or {@code hi}
      *         is {@code null}
      */
+
     public Iterable<Key> keys(Key lo, Key hi) {
         if (lo == null) {
             throw new IllegalArgumentException("first argument to keys() is null");
@@ -275,12 +268,12 @@ public class Solution<Key extends Comparable<Key>, Value> {
             throw new IllegalArgumentException("second argument to keys() is null");
         }
 
-        Stack<Key> stack = new Stack<Key>();
-        keys(root, stack, lo, hi);
-        return stack;
+        Queue<Key> queue = new LinkedList<Key>();
+        keys(root, queue, lo, hi);
+        return queue;
     }
 
-    private void keys(Node x,Stack<Key> stack, Key lo, Key hi) { 
+    private void keys(Node x,Queue<Key> queue, Key lo, Key hi) { 
         if (x == null) {
             return;
         }
@@ -290,7 +283,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
             
             if (x.left == null) {
                 if (cmphi <= 0 && cmplo >= 0) {
-                    stack.push(x.key);
+                    queue.add(x.key);
                 }
                 x = x.right;
             }
@@ -305,7 +298,7 @@ public class Solution<Key extends Comparable<Key>, Value> {
                 }
                 else {
                     node.right = null;
-                    if (cmphi <= 0 && cmplo>=0) stack.push(x.key);{
+                    if (cmphi <= 0 && cmplo>=0) queue.add(x.key);{
                      x = x.right;
                     }
                 }

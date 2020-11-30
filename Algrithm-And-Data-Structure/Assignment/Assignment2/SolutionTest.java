@@ -1,7 +1,6 @@
 public class SolutionTest<Key extends Comparable<Key>, Value>{
 	public static void main(String[] args) {
 		Solution<String, Integer> obj = new Solution<String, Integer>();
-		//System.out.println(obj.isEmpty());
 		obj.put("ABDUL", 1);
 		System.out.println(obj.get("ABDUL"));
 		obj.put("HRITHIK", 2);
@@ -24,13 +23,7 @@ public class SolutionTest<Key extends Comparable<Key>, Value>{
 		System.out.println(obj.get("CHIMI"));
 		System.out.println(obj.floor("CHIMA"));
 		obj.put("SONAM", 8);
-		System.out.println(obj.keys("ABDUL", "TASHI"));
-
-
-
-
-		
-		
+		System.out.println(obj.keys("ABDUL", "TASHI"));		
 	}
 	
 }
